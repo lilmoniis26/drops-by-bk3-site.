@@ -1,24 +1,28 @@
-`html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Drops By BK3 – Tactical HUD</title>
+  <title>Drops By BK3 // Tactical HUD</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     :root {
       --bg-main: #05070b;
       --bg-panel: #0b1018;
-      --accent: #00ffc6;
-      --accent-soft: rgba(0, 255, 198, 0.18);
-      --accent-strong: #27ffd8;
-      --text-main: #f5f7fb;
-      --text-muted: #7f8ca3;
-      --danger: #ff4b6b;
-      --warning: #ffc857;
-      --border-soft: rgba(255, 255, 255, 0.06);
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      --bg-panel-soft: #0f1724;
+      --accent: #00f0ff;
+      --accent-soft: rgba(0, 240, 255, 0.16);
+      --accent-strong: #35ffb5;
+      --danger: #ff3366;
+      --text-main: #f5f7ff;
+      --text-soft: #9aa4c6;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 0 40px rgba(0, 0, 0, 0.8);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --hud-line: rgba(0, 240, 255, 0.35);
+      --hud-glow: 0 0 18px rgba(0, 240, 255, 0.55);
     }
 
     * {
@@ -28,1258 +32,1224 @@
     }
 
     body {
-      font-family: var(--font-main);
-      background: radial-gradient(circle at top, #101624 0, #05070b 55%);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #101729 0, #020308 55%, #000 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      padding: 24px;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
+    .hud-shell {
+      width: 100%;
+      max-width: 1320px;
+      min-height: 88vh;
+      background: radial-gradient(circle at top left, #151b2b 0, #05070b 55%);
+      border-radius: 26px;
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      box-shadow: var(--shadow-soft), 0 0 80px rgba(0, 240, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
     }
 
-    / Layout shell /
-
-    .page {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    /* HUD chrome */
+    .hud-shell::before,
+    .hud-shell::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
     }
 
-    header {
-      border-bottom: 1px solid var(--border-soft);
+    .hud-shell::before {
+      background:
+        linear-gradient(120deg, rgba(0, 240, 255, 0.12), transparent 40%),
+        linear-gradient(-135deg, rgba(53, 255, 181, 0.12), transparent 45%);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+
+    .hud-shell::after {
+      border-radius: inherit;
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.08) inset;
+    }
+
+    /* Left rail */
+    .hud-rail {
+      position: relative;
+      z-index: 2;
+      border-right: 1px solid var(--border-subtle);
       background: linear-gradient(
-        to right,
-        rgba(0, 255, 198, 0.08),
-        transparent
+        180deg,
+        rgba(0, 240, 255, 0.06),
+        rgba(5, 7, 11, 0.96)
       );
-      backdrop-filter: blur(12px);
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 16px 16px;
+      gap: 18px;
     }
 
-    .nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0.75rem 1.25rem;
+    .brand-lockup {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
+      gap: 10px;
+      padding: 10px 10px 12px;
+      border-radius: 999px;
+      background: radial-gradient(circle at left, #00f0ff22, transparent 55%);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      box-shadow: var(--hud-glow);
     }
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 240, 255, 0.6);
+      background:
+        conic-gradient(from 210deg, #00f0ff, #35ffb5, #00f0ff),
+        radial-gradient(circle at 30% 0, #ffffff, transparent 55%);
+      position: relative;
+      overflow: hidden;
     }
 
-    .logo-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      border: 1px solid var(--accent);
+    .brand-mark::after {
+      content: "BK3";
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 30% 0, #1bffcf 0, #05070b 55%);
-      box-shadow: 0 0 18px rgba(0, 255, 198, 0.4);
-      font-weight: 800;
-      font-size: 1.1rem;
-      letter-spacing: 0.08em;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+      color: #020308;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
     }
 
     .brand-text {
       display: flex;
       flex-direction: column;
-      gap: 0.1rem;
+      gap: 2px;
     }
 
     .brand-title {
-      font-size: 0.95rem;
-      letter-spacing: 0.16em;
+      font-size: 13px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--accent-strong);
+      color: var(--accent);
     }
 
     .brand-sub {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: var(--text-soft);
       text-transform: uppercase;
       letter-spacing: 0.16em;
     }
 
-    .nav-links {
+    .rail-section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+      margin: 4px 2px 2px;
+    }
+
+    .nav-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .nav-item {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .nav-links a {
+      justify-content: space-between;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      color: var(--text-soft);
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.18s ease;
       position: relative;
-      padding-bottom: 0.15rem;
-      color: var(--text-muted);
+      overflow: hidden;
     }
 
-    .nav-links a::after {
+    .nav-item span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(154, 164, 198, 0.6);
+    }
+
+    .nav-item[data-active="true"] {
+      border-color: rgba(0, 240, 255, 0.6);
+      background: radial-gradient(circle at left, #00f0ff22, transparent 60%);
+      color: var(--text-main);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
+    }
+
+    .nav-item[data-active="true"] .nav-item-dot {
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.9);
+    }
+
+    .nav-item::after {
       content: "";
       position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: width 0.18s ease-out;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        rgba(0, 240, 255, 0.18),
+        transparent 40%
+      );
+      opacity: 0;
+      transition: opacity 0.18s ease;
     }
 
-    .nav-links a:hover {
-      color: var(--text-main);
+    .nav-item:hover::after {
+      opacity: 1;
     }
 
-    .nav-links a:hover::after {
-      width: 100%;
+    .nav-item-kbd {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(154, 164, 198, 0.5);
+      color: var(--text-soft);
     }
 
-    .nav-cta {
+    .rail-divider {
+      height: 1px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.4), transparent 70%);
+      opacity: 0.4;
+      margin: 4px 0 2px;
+    }
+
+    .status-card {
+      margin-top: 4px;
+      padding: 10px 10px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, #00f0ff22, #05070b 60%);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      box-shadow: var(--hud-glow);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-soft);
+    }
+
+    .status-pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.7);
+      color: var(--accent);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .status-metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .status-metric strong {
+      font-size: 16px;
+      color: var(--accent-strong);
+    }
+
+    .status-meter {
+      margin-top: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .status-meter-fill {
+      position: absolute;
+      inset: 0;
+      width: 72%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.9);
+    }
+
+    .rail-footer {
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 240, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .rail-footer span {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .rail-footer small {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    /* Main area */
+    .hud-main {
+      position: relative;
+      z-index: 1;
+      padding: 18px 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hud-topbar {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      justify-content: space-between;
+      gap: 10px;
     }
 
-    .badge-live {
-      display: inline-flex;
+    .hud-top-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hud-eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+    }
+
+    .hud-title {
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .hud-title span {
+      color: var(--accent);
+    }
+
+    .hud-subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+      max-width: 420px;
+    }
+
+    .hud-top-right {
+      display: flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 75, 107, 0.4);
-      background: radial-gradient(circle at 0 0, rgba(255, 75, 107, 0.3), transparent);
-      font-size: 0.7rem;
+      gap: 10px;
+    }
+
+    .hud-tag {
+      font-size: 10px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: var(--danger);
-    }
-
-    .badge-dot {
-      width: 7px;
-      height: 7px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: var(--danger);
-      box-shadow: 0 0 10px rgba(255, 75, 107, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.06);
     }
 
-    .btn-primary {
-      padding: 0.45rem 0.9rem;
+    .hud-clock {
+      font-size: 12px;
+      color: var(--text-soft);
+      padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid var(--accent);
-      background: linear-gradient(
-        135deg,
-        rgba(0, 255, 198, 0.12),
-        rgba(0, 255, 198, 0.02)
-      );
-      color: var(--accent-strong);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: background 0.18s ease-out, transform 0.12s ease-out,
-        box-shadow 0.18s ease-out;
+      border: 1px solid var(--border-subtle);
+      background: rgba(5, 7, 11, 0.9);
+      min-width: 120px;
+      text-align: center;
     }
 
-    .btn-primary:hover {
-      background: linear-gradient(
-        135deg,
-        rgba(0, 255, 198, 0.22),
-        rgba(0, 255, 198, 0.08)
-      );
-      box-shadow: 0 0 18px rgba(0, 255, 198, 0.35);
-      transform: translateY(-1px);
-    }
-
-    main {
+    /* Layout rows */
+    .hud-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 12px;
+      align-items: stretch;
+      min-height: 0;
       flex: 1;
     }
 
-    .shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1.5rem 1.25rem 2.5rem;
-      display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.4fr);
-      gap: 1.5rem;
-    }
-
-    / Left column – hero + drops /
-
     .panel {
-      border-radius: 18px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top left, #151d30 0, #05070b 55%);
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.9),
-        0 18px 45px rgba(0, 0, 0, 0.85);
-      padding: 1.25rem 1.25rem 1.4rem;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(circle at top left, #151b2b, #05070b 60%);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 12px 12px 10px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 0;
     }
 
     .panel::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(
-        circle at 0 0,
-        rgba(0, 255, 198, 0.12),
-        transparent 55%
+      background: linear-gradient(
+        135deg,
+        rgba(0, 240, 255, 0.12),
+        transparent 40%
       );
-      opacity: 0.6;
+      opacity: 0.5;
       pointer-events: none;
     }
 
-    .panel-inner {
+    .panel-header {
       position: relative;
       z-index: 1;
-    }
-
-    .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1rem;
+      gap: 8px;
     }
 
-    .panel-title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .eyebrow {
-      font-size: 0.7rem;
+    .panel-title {
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.18em;
-      color: var(--accent-strong);
-      display: inline-flex;
+      color: var(--text-soft);
+      display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 8px;
     }
 
-    .eyebrow span {
-      width: 32px;
+    .panel-title::before {
+      content: "";
+      width: 18px;
       height: 1px;
-      background: linear-gradient(
-        to right,
-        var(--accent-strong),
-        rgba(0, 255, 198, 0)
-      );
+      background: linear-gradient(90deg, var(--hud-line), transparent);
+      box-shadow: var(--hud-glow);
     }
 
-    .hero-title {
-      font-size: 1.6rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .hero-sub {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      max-width: 420px;
-    }
-
-    .panel-metrics {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      align-items: flex-end;
-      font-size: 0.75rem;
-    }
-
-    .metric-row {
+    .panel-controls {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      color: var(--text-muted);
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-soft);
     }
 
-    .metric-label {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: 0.65rem;
-    }
-
-    .metric-value {
-      color: var(--accent-strong);
-      font-weight: 600;
-    }
-
-    .metric-pill {
-      padding: 0.15rem 0.5rem;
+    .panel-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 999px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      background: rgba(0, 255, 198, 0.06);
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.9);
     }
 
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
-      gap: 1.25rem;
-      margin-top: 0.75rem;
-    }
-
-    .hero-card {
-      border-radius: 14px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top, #151d2a 0, #05070b 60%);
-      padding: 0.9rem;
+    .panel-body {
+      position: relative;
+      z-index: 1;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    /* Merch grid */
+    .merch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .merch-card {
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top, #151b2b, #05070b 70%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
+      transition: 0.18s ease;
     }
 
-    .hero-card::after {
+    .merch-card::before {
       content: "";
       position: absolute;
       inset: 0;
       background: linear-gradient(
         135deg,
-        rgba(0, 255, 198, 0.12),
-        transparent 55%
+        rgba(0, 240, 255, 0.16),
+        transparent 45%
       );
-      opacity: 0.7;
-      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
     }
 
-    .hero-card-label {
-      font-size: 0.7rem;
+    .merch-card:hover {
+      border-color: rgba(0, 240, 255, 0.7);
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .merch-card:hover::before {
+      opacity: 1;
+    }
+
+    .merch-tag-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: var(--text-muted);
+      color: var(--text-soft);
     }
 
-    .hero-card-main {
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .hero-card-tagline {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .hero-card-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.25rem;
-    }
-
-    .tag {
-      padding: 0.15rem 0.5rem;
+    .merch-tag {
+      padding: 2px 6px;
       border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.5);
+      color: var(--accent);
+      background: rgba(0, 240, 255, 0.06);
+    }
+
+    .merch-img {
+      margin-top: 4px;
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-      background: rgba(0, 0, 0, 0.4);
-    }
-
-    .tag-accent {
-      border-color: rgba(0, 255, 198, 0.5);
-      color: var(--accent-strong);
-      background: rgba(0, 255, 198, 0.08);
-    }
-
-    .hero-card-cta-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-top: 0.35rem;
-    }
-
-    .hero-card-note {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .hero-card-mini {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--accent-strong);
-    }
-
-    .divider {
-      margin: 1.1rem 0 0.8rem;
-      height: 1px;
-      background: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 0.08),
-        rgba(255, 255, 255, 0)
-      );
-    }
-
-    .panel-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .panel-row-title {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-
-    .panel-row-filters {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.7rem;
-    }
-
-    .chip {
-      padding: 0.18rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-      cursor: pointer;
-      background: rgba(0, 0, 0, 0.4);
-    }
-
-    .chip-active {
-      border-color: rgba(0, 255, 198, 0.6);
-      color: var(--accent-strong);
-      background: rgba(0, 255, 198, 0.08);
-    }
-
-    .drops-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
-    }
-
-    .drop-card {
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
-      padding: 0.6rem 0.6rem 0.65rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.12s ease-out, box-shadow 0.18s ease-out,
-        border-color 0.18s ease-out;
-    }
-
-    .drop-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9);
-      border-color: rgba(0, 255, 198, 0.5);
-    }
-
-    .drop-tag-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.35rem;
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-
-    .drop-status {
-      padding: 0.1rem 0.4rem;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      background: rgba(0, 255, 198, 0.06);
-      color: var(--accent-strong);
-    }
-
-    .drop-status-hot {
-      border-color: rgba(255, 75, 107, 0.7);
-      background: rgba(255, 75, 107, 0.12);
-      color: var(--danger);
-    }
-
-    .drop-name {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-    }
-
-    .drop-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.35rem;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .drop-price {
-      color: var(--accent-strong);
-      font-weight: 600;
-    }
-
-    .drop-pill {
-      padding: 0.1rem 0.4rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .drop-bar {
-      margin-top: 0.25rem;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.06);
-      overflow: hidden;
-    }
-
-    .drop-bar-fill {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(
-        to right,
-        var(--accent),
-        var(--warning),
-        var(--danger)
-      );
-      width: 72%;
-    }
-
-    / Right column – stream + queue /
-
-    .panel-vertical {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .stream-panel {
-      border-radius: 18px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
-      padding: 1rem 1rem 1.1rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stream-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        circle at 100% 0,
-        rgba(0, 255, 198, 0.12),
-        transparent 55%
-      );
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    .stream-inner {
-      position: relative;
-      z-index: 1;
-    }
-
-    .stream-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .stream-title-block {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .stream-eyebrow {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .stream-eyebrow-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(0, 255, 198, 0.9);
-    }
-
-    .stream-title {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .stream-meta {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
-
-    .stream-cta-row {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.35rem;
-      font-size: 0.7rem;
-    }
-
-    .stream-platforms {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-      justify-content: flex-end;
-    }
-
-    .platform-pill {
-      padding: 0.15rem 0.45rem;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-
-    .stream-screen {
-      margin-top: 0.5rem;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 0, 0, 0.9);
-      background: radial-gradient(circle at top, #05070b 0, #000 60%);
-      padding: 0.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stream-overlay {
-      border-radius: 9px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
-      height: 180px;
+      background: radial-gradient(circle at top, #1f2937, #020308 70%);
+      aspect-ratio: 4 / 3;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
+      color: var(--text-soft);
+      font-size: 11px;
+      text-align: center;
+      padding: 6px;
     }
 
-    .stream-overlay::before,
-    .stream-overlay::after {
-      content: "";
-      position: absolute;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      width: 120%;
-      height: 120%;
-      transform: rotate(2deg);
-      opacity: 0.18;
+    .merch-img span {
+      opacity: 0.8;
     }
 
-    .stream-overlay::after {
-      transform: rotate(-4deg);
-      opacity: 0.12;
-    }
-
-    .stream-hud-top,
-    .stream-hud-bottom {
-      position: absolute;
-      left: 0;
-      right: 0;
-      padding: 0.25rem 0.5rem;
+    .merch-meta {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      font-size: 0.6rem;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .merch-name {
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.12em;
     }
 
-    .stream-hud-top {
-      top: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.9),
-        transparent
-      );
-    }
-
-    .stream-hud-bottom {
-      bottom: 0;
-      background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.9),
-        transparent
-      );
-    }
-
-    .hud-pill {
-      padding: 0.1rem 0.4rem;
-      border-radius: 999px;
-      border: 1px solid rgba(0, 255, 198, 0.4);
-      background: rgba(0, 0, 0, 0.7);
+    .merch-price {
+      font-size: 12px;
       color: var(--accent-strong);
     }
 
-    .hud-meter {
-      display: inline-flex;
+    .merch-cta-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.25rem;
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--text-soft);
     }
 
-    .hud-meter-bar {
-      width: 60px;
-      height: 3px;
+    .merch-cta-row button {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 4px 8px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.7);
+      background: rgba(0, 240, 255, 0.08);
+      color: var(--accent);
+      cursor: pointer;
     }
 
-    .hud-meter-fill {
-      width: 70%;
-      height: 100%;
-      background: linear-gradient(
-        to right,
-        var(--accent),
-        var(--warning),
-        var(--danger)
-      );
+    .merch-cta-row button:hover {
+      background: rgba(0, 240, 255, 0.18);
     }
 
-    .queue-panel {
-      border-radius: 18px;
-      border: 1px solid var(--border-soft);
-      background: radial-gradient(circle at bottom, #151b28 0, #05070b 60%);
-      padding: 0.9rem 1rem 1rem;
+    /* Live widget */
+    .widget-shell {
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top, #151b2b, #05070b 70%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
       position: relative;
       overflow: hidden;
     }
 
-    .queue-panel::before {
+    .widget-shell::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(
-        circle at 0 100%,
-        rgba(0, 255, 198, 0.12),
-        transparent 55%
-      );
+      background:
+        radial-gradient(circle at top left, rgba(0, 240, 255, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(53, 255, 181, 0.18), transparent 55%);
       opacity: 0.7;
       pointer-events: none;
     }
 
-    .queue-inner {
+    .widget-header {
       position: relative;
       z-index: 1;
-    }
-
-    .queue-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .queue-title {
-      font-size: 0.8rem;
+      align-items: center;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.16em;
-      color: var(--text-muted);
+      color: var(--text-soft);
     }
 
-    .queue-count {
-      font-size: 0.7rem;
-      color: var(--accent-strong);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .queue-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      font-size: 0.7rem;
-    }
-
-    .queue-item {
+    .widget-status {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      padding: 0.35rem 0.45rem;
-      border-radius: 9px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(0, 0, 0, 0.6);
+      gap: 6px;
     }
 
-    .queue-left {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .queue-dot {
+    .widget-status-dot {
       width: 7px;
       height: 7px;
       border-radius: 999px;
-      background: var(--accent);
+      background: var(--danger);
+      box-shadow: 0 0 12px rgba(255, 51, 102, 0.9);
     }
 
-    .queue-label {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
+    .widget-status[data-live="true"] .widget-status-dot {
+      background: #ff3b3b;
+      box-shadow: 0 0 16px rgba(255, 59, 59, 0.95);
     }
 
-    .queue-tag {
-      padding: 0.1rem 0.4rem;
-      border-radius: 999px;
+    .widget-status[data-live="true"] span {
+      color: #ff9ea8;
+    }
+
+    .widget-body {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 8px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .widget-stream {
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.08);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-muted);
-    }
-
-    .queue-tag-hot {
-      border-color: rgba(255, 75, 107, 0.7);
-      color: var(--danger);
-    }
-
-    footer {
-      border-top: 1px solid var(--border-soft);
-      padding: 0.75rem 1.25rem 1rem;
-      font-size: 0.7rem;
-      color: var(--text-muted);
+      background: radial-gradient(circle at top, #111827, #020308 70%);
+      position: relative;
+      overflow: hidden;
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 10px;
+      color: var(--text-soft);
+      font-size: 11px;
+      text-align: center;
     }
 
-    .footer-inner {
-      max-width: 1200px;
-      width: 100%;
+    .widget-stream::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+          rgba(255, 255, 255, 0.04) 1px,
+          transparent 1px
+        ),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 18px 18px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .widget-stream-label {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-soft);
+      opacity: 0.9;
+    }
+
+    .widget-stream-overlay {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
-    }
-
-    .footer-left {
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .footer-right {
-      display: flex;
       align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
+      font-size: 10px;
+      color: var(--text-main);
     }
 
-    .footer-pill {
-      padding: 0.1rem 0.45rem;
+    .widget-stream-pill {
+      padding: 2px 8px;
       border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.7);
+      background: rgba(0, 0, 0, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 9px;
+      color: var(--accent);
+    }
+
+    .widget-metrics {
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.08);
+      background: radial-gradient(circle at top, #111827, #020308 70%);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .widget-metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .widget-metric-row strong {
+      color: var(--accent-strong);
+      font-size: 14px;
+    }
+
+    .widget-mini-meter {
+      margin-top: 2px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .widget-mini-meter-fill {
+      position: absolute;
+      inset: 0;
+      width: 40%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.9);
+    }
+
+    .widget-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .widget-footer span {
       text-transform: uppercase;
       letter-spacing: 0.16em;
     }
 
-    / Responsive /
+    .widget-footer button {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 240, 255, 0.7);
+      background: rgba(0, 240, 255, 0.08);
+      color: var(--accent);
+      cursor: pointer;
+    }
 
-    @media (max-width: 960px) {
-      .shell {
-        grid-template-columns: minmax(0, 1fr);
+    .widget-footer button:hover {
+      background: rgba(0, 240, 255, 0.18);
+    }
+
+    /* Bottom strip */
+    .hud-bottom {
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 240, 255, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .hud-bottom span {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .hud-bottom small {
+      font-size: 10px;
+      opacity: 0.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      body {
+        padding: 12px;
       }
 
-      .panel-metrics {
+      .hud-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hud-rail {
         display: none;
       }
     }
 
-    @media (max-width: 720px) {
-      .nav {
-        flex-wrap: wrap;
+    @media (max-width: 780px) {
+      .hud-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hud-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hud-top-right {
+        align-self: stretch;
         justify-content: space-between;
       }
 
-      .nav-links {
-        display: none;
-      }
-
-      .shell {
-        padding-inline: 1rem;
-      }
-
-      .hero-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .drops-grid {
+      .merch-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 480px) {
-      .drops-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .footer-inner {
-        flex-direction: column;
-        align-items: flex-start;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="nav">
-        <div class="nav-left">
-          <div class="logo-mark">BK3</div>
-          <div class="brand-text">
-            <div class="brand-title">Drops By BK3</div>
-            <div class="brand-sub">Tactical retail ops</div>
-          </div>
-        </div>
-        <nav class="nav-links">
-          <a href="#drops">Drops</a>
-          <a href="#stream">Live</a>
-          <a href="#queue">Queue</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <div class="nav-cta">
-          <div class="badge-live">
-            <span class="badge-dot"></span>
-            Live Ops
-          </div>
-          <button class="btn-primary" onclick="scrollToSection('drops')">
-            Shop latest
-            <span>↗</span>
-          </button>
+  <div class="hud-shell">
+    <!-- Left rail -->
+    <aside class="hud-rail">
+      <div class="brand-lockup">
+        <div class="brand-mark"></div>
+        <div class="brand-text">
+          <div class="brand-title">Drops By BK3</div>
+          <div class="brand-sub">Tactical retail // live ops</div>
         </div>
       </div>
-    </header>
 
-    <main>
-      <div class="shell">
-        <!-- LEFT COLUMN -->
-        <section class="panel" id="drops">
-          <div class="panel-inner">
-            <div class="panel-header">
-              <div class="panel-title-block">
-                <div class="eyebrow">
-                  <span></span>
-                  Tactical drop control
-                </div>
-                <h1 class="hero-title">Curated tactical drops, one op at a time.</h1>
-                <p class="hero-sub">
-                  Built like a HUD, stocked like a boutique. Every drop is intentional—no noise, just pieces that
-                  hit.
-                </p>
-              </div>
-              <div class="panel-metrics">
-                <div class="metric-row">
-                  <span class="metric-label">Current op</span>
-                  <span class="metric-value">Drop 03 · Q1</span>
-                </div>
-                <div class="metric-row">
-                  <span class="metric-label">Status</span>
-                  <span class="metric-pill">Live inventory</span>
-                </div>
-              </div>
+      <div class="rail-section-label">Navigation</div>
+      <div class="nav-stack">
+        <div class="nav-item" data-section="dashboard" data-active="true">
+          <span>
+            <div class="nav-item-dot"></div>
+            <span>DASHBOARD</span>
+          </span>
+          <span class="nav-item-kbd">BK3-01</span>
+        </div>
+        <div class="nav-item" data-section="merch">
+          <span>
+            <div class="nav-item-dot"></div>
+            <span>MERCH GRID</span>
+          </span>
+          <span class="nav-item-kbd">BK3-02</span>
+        </div>
+        <div class="nav-item" data-section="live">
+          <span>
+            <div class="nav-item-dot"></div>
+            <span>LIVE WIDGET</span>
+          </span>
+          <span class="nav-item-kbd">BK3-03</span>
+        </div>
+      </div>
+
+      <div class="rail-divider"></div>
+
+      <div class="rail-section-label">Session</div>
+      <div class="status-card">
+        <div class="status-row">
+          <span>Site status</span>
+          <span class="status-pill">HUD ONLINE</span>
+        </div>
+        <div class="status-metric">
+          <span>Preview sync</span>
+          <strong>LIVE</strong>
+        </div>
+        <div class="status-meter">
+          <div class="status-meter-fill"></div>
+        </div>
+      </div>
+
+      <div class="rail-footer">
+        <span>BK3 tactical stack</span>
+        <small>Code: <strong>codeNOW.txt</strong> · Mode: Single-page HUD · Channel: Web</small>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="hud-main">
+      <header class="hud-topbar">
+        <div class="hud-top-left">
+          <div class="hud-eyebrow">BK3 // Tactical command</div>
+          <div class="hud-title">
+            <span>Drops</span> By BK3
+          </div>
+          <div class="hud-subtitle">
+            Central HUD for your tactical retail + live stream presence. One page, one vibe, all channels aligned.
+          </div>
+        </div>
+        <div class="hud-top-right">
+          <div class="hud-tag">Build: HUD-SINGLE // v1.0</div>
+          <div class="hud-clock" id="hudClock">--:--:--</div>
+        </div>
+      </header>
+
+      <section class="hud-grid" id="hudSections">
+        <!-- Left: Merch panel -->
+        <section class="panel" data-section-panel="dashboard merch">
+          <div class="panel-header">
+            <div class="panel-title">Merch grid // Tactical drops</div>
+            <div class="panel-controls">
+              <span>BK3-MERCH</span>
+              <span class="panel-dot"></span>
             </div>
-
-            <div class="hero-grid">
-              <div class="hero-card">
-                <div class="hero-card-label">Featured loadout</div>
-                <div class="hero-card-main">Urban recon set</div>
-                <div class="hero-card-tagline">
-                  Built for creators who move between stream, street, and studio without switching identities.
+          </div>
+          <div class="panel-body">
+            <div class="merch-grid">
+              <!-- CARD 1 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 01</span>
+                  <span class="merch-tag">Core loadout</span>
                 </div>
-                <div class="hero-card-tags">
-                  <span class="tag-accent">Tactical streetwear</span>
-                  <span class="tag">Stream-ready</span>
-                  <span class="tag">Unisex fit</span>
+                <div class="merch-img">
+                  <span>Upload your hoodie / tee image here in Wix<br />Slot: Core Tactical Piece</span>
                 </div>
-                <div class="hero-card-cta-row">
-                  <div class="hero-card-note">
-                    Includes hoodie, cap, and patch set. Limited run, no restock.
-                  </div>
-                  <button class="btn-primary" onclick="scrollToSection('drops')">
-                    View bundle
-                  </button>
+                <div class="merch-meta">
+                  <div class="merch-name">BK3 Tactical Hoodie</div>
+                  <div class="merch-price">$79</div>
                 </div>
-              </div>
-
-              <div class="hero-card">
-                <div class="hero-card-label">Ops intel</div>
-                <div class="hero-card-main">BK3 control room</div>
-                <div class="hero-card-tagline">
-                  Retail, stream, and community ops routed through one ecosystem—Drops By BK3.
-                </div>
-                <div class="hero-card-tags">
-                  <span class="tag">TikTok shop</span>
-                  <span class="tag">Multi-stream</span>
-                  <span class="tag-accent">HUD overlays</span>
-                </div>
-                <div class="hero-card-cta-row">
-                  <div class="hero-card-mini">Next: Q2 tactical capsule</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="panel-row">
-              <div class="panel-row-title">Active drops</div>
-              <div class="panel-row-filters">
-                <button class="chip chip-active">All</button>
-                <button class="chip">Bundles</button>
-                <button class="chip">Apparel</button>
-                <button class="chip">Stream assets</button>
-              </div>
-            </div>
-
-            <div class="drops-grid">
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 03 · 01</span>
-                  <span class="drop-status drop-status-hot">Hot</span>
-                </div>
-                <div class="drop-name">HUD Ops Hoodie</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$85</span>
-                  <span class="drop-pill">Black / Neon mint</span>
-                </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 78%"></div>
+                <div class="merch-cta-row">
+                  <span>Thermal grid · Stealth black</span>
+                  <button type="button">View drop</button>
                 </div>
               </article>
 
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 03 · 02</span>
-                  <span class="drop-status">Live</span>
+              <!-- CARD 2 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 02</span>
+                  <span class="merch-tag">Sidearm fit</span>
                 </div>
-                <div class="drop-name">Signal Lock Cap</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$42</span>
-                  <span class="drop-pill">One size</span>
+                <div class="merch-img">
+                  <span>Upload your joggers / pants image here<br />Slot: Mobility Layer</span>
                 </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 54%"></div>
+                <div class="merch-meta">
+                  <div class="merch-name">Recon Joggers</div>
+                  <div class="merch-price">$69</div>
                 </div>
-              </article>
-
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 03 · 03</span>
-                  <span class="drop-status">Live</span>
-                </div>
-                <div class="drop-name">Creator Ops Patch Set</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$28</span>
-                  <span class="drop-pill">3-pack</span>
-                </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 62%"></div>
+                <div class="merch-cta-row">
+                  <span>Articulated · Ready for queue</span>
+                  <button type="button">View drop</button>
                 </div>
               </article>
 
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 02 · 04</span>
-                  <span class="drop-status">Archive</span>
+              <!-- CARD 3 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 03</span>
+                  <span class="merch-tag">Headshot tier</span>
                 </div>
-                <div class="drop-name">Night Ops Tee</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$48</span>
-                  <span class="drop-pill">Archive only</span>
+                <div class="merch-img">
+                  <span>Upload your hat / beanie image here<br />Slot: Headgear</span>
                 </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 100%"></div>
+                <div class="merch-meta">
+                  <div class="merch-name">Operator Cap</div>
+                  <div class="merch-price">$39</div>
                 </div>
-              </article>
-
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 03 · 05</span>
-                  <span class="drop-status drop-status-hot">Low stock</span>
-                </div>
-                <div class="drop-name">Stream Deck Skin</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$24</span>
-                  <span class="drop-pill">HUD theme</span>
-                </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 18%"></div>
+                <div class="merch-cta-row">
+                  <span>Embroidered · BK3 mark</span>
+                  <button type="button">View drop</button>
                 </div>
               </article>
 
-              <article class="drop-card">
-                <div class="drop-tag-row">
-                  <span>Drop 03 · 06</span>
-                  <span class="drop-status">Live</span>
+              <!-- CARD 4 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 04</span>
+                  <span class="merch-tag">Stream kit</span>
                 </div>
-                <div class="drop-name">Overlay Pack v1</div>
-                <div class="drop-meta">
-                  <span class="drop-price">$60</span>
-                  <span class="drop-pill">Twitch · Kick · YT</span>
+                <div class="merch-img">
+                  <span>Upload your mousepad / desk mat image<br />Slot: Desk Surface</span>
                 </div>
-                <div class="drop-bar">
-                  <div class="drop-bar-fill" style="width: 40%"></div>
+                <div class="merch-meta">
+                  <div class="merch-name">HUD Desk Mat</div>
+                  <div class="merch-price">$49</div>
+                </div>
+                <div class="merch-cta-row">
+                  <span>Grid-locked · Anti-slip</span>
+                  <button type="button">View drop</button>
+                </div>
+              </article>
+
+              <!-- CARD 5 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 05</span>
+                  <span class="merch-tag">Signal</span>
+                </div>
+                <div class="merch-img">
+                  <span>Upload your sticker / patch pack image<br />Slot: Signal Pack</span>
+                </div>
+                <div class="merch-meta">
+                  <div class="merch-name">Signal Pack</div>
+                  <div class="merch-price">$29</div>
+                </div>
+                <div class="merch-cta-row">
+                  <span>Vinyl · Tactical icons</span>
+                  <button type="button">View drop</button>
+                </div>
+              </article>
+
+              <!-- CARD 6 -->
+              <article class="merch-card">
+                <div class="merch-tag-row">
+                  <span>Drop // 06</span>
+                  <span class="merch-tag">Bundle</span>
+                </div>
+                <div class="merch-img">
+                  <span>Upload your bundle image<br />Slot: Full Loadout</span>
+                </div>
+                <div class="merch-meta">
+                  <div class="merch-name">Full Loadout Bundle</div>
+                  <div class="merch-price">$199</div>
+                </div>
+                <div class="merch-cta-row">
+                  <span>Best value · Queue ready</span>
+                  <button type="button">View drop</button>
                 </div>
               </article>
             </div>
           </div>
         </section>
 
-        <!-- RIGHT COLUMN -->
-        <section class="panel-vertical">
-          <section class="stream-panel" id="stream">
-            <div class="stream-inner">
-              <div class="stream-header">
-                <div class="stream-title-block">
-                  <div class="stream-eyebrow">
-                    <span class="stream-eyebrow-dot"></span>
-                    Multi-stream control
-                  </div>
-                  <div class="stream-title">Live from the BK3 ops room</div>
-                  <div class="stream-meta">
-                    TikTok · Twitch · YouTube · Kick · Facebook · Trovo
+        <!-- Right: Live widget panel -->
+        <section class="panel" data-section-panel="dashboard live">
+          <div class="panel-header">
+            <div class="panel-title">Live widget // Stream status</div>
+            <div class="panel-controls">
+              <span>BK3-LIVE</span>
+              <span class="panel-dot"></span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="widget-shell">
+              <div class="widget-header">
+                <div class="widget-status" id="widgetStatus" data-live="false">
+                  <div class="widget-status-dot"></div>
+                  <span id="widgetStatusLabel">OFFLINE STANDBY</span>
+                </div>
+                <span>Channel stack: Twitch · Kick · YouTube</span>
+              </div>
+
+              <div class="widget-body">
+                <div class="widget-stream">
+                  <div class="widget-stream-label">Live viewport // Overlay preview</div>
+                  <span>
+                    This block is your “fake live” preview.<br />
+                    In Wix, you can swap this with an actual embed or animated overlay that matches your stream.
+                  </span>
+                  <div class="widget-stream-overlay">
+                    <span>Scene: BK3 // Tactical Lobby</span>
+                    <span class="widget-stream-pill" id="widgetScenePill">Scene: Standby</span>
                   </div>
                 </div>
-                <div class="stream-cta-row">
-                  <button class="btn-primary">
-                    Go to live shop
-                  </button>
-                  <div class="stream-platforms">
-                    <span class="platform-pill">TikTok shop</span>
-                    <span class="platform-pill">Twitch</span>
-                    <span class="platform-pill">YouTube</span>
+
+                <div class="widget-metrics">
+                  <div class="widget-metric-row">
+                    <span>Viewers (simulated)</span>
+                    <strong id="metricViewers">0</strong>
+                  </div>
+                  <div class="widget-mini-meter">
+                    <div class="widget-mini-meter-fill" id="metricViewersFill"></div>
+                  </div>
+
+                  <div class="widget-metric-row">
+                    <span>Queue energy</span>
+                    <strong id="metricEnergy">0%</strong>
+                  </div>
+                  <div class="widget-mini-meter">
+                    <div class="widget-mini-meter-fill" id="metricEnergyFill"></div>
+                  </div>
+
+                  <div class="widget-metric-row">
+                    <span>Drop focus</span>
+                    <strong id="metricDrop">CORE</strong>
                   </div>
                 </div>
               </div>
 
-              <div class="stream-screen">
-                <div class="stream-overlay">
-                  <div class="stream-hud-top">
-                    <span class="hud-pill">Drops By BK3</span>
-                    <span class="hud-meter">
-                      <span>Engagement</span>
-                      <span class="hud-meter-bar">
-                        <span class="hud-meter-fill"></span>
-                      </span>
-                    </span>
-                  </div>
-                  <div>Stream window · HUD overlay preview</div>
-                  <div class="stream-hud-bottom">
-                    <span class="hud-pill">Next drop: Urban Recon Set</span>
-                    <span class="hud-pill">Q1 · 2026</span>
-                  </div>
-                </div>
+              <div class="widget-footer">
+                <span>BK3 live widget // Front-end only</span>
+                <button type="button" id="toggleLiveBtn">Toggle live state</button>
               </div>
             </div>
-          </section>
-
-          <section class="queue-panel" id="queue">
-            <div class="queue-inner">
-              <div class="queue-header">
-                <div class="queue-title">Ops queue</div>
-                <div class="queue-count">03 items in pipeline</div>
-              </div>
-              <div class="queue-list">
-                <div class="queue-item">
-                  <div class="queue-left">
-                    <span class="queue-dot"></span>
-                    <span class="queue-label">Q2 tactical capsule</span>
-                  </div>
-                  <span class="queue-tag queue-tag-hot">In dev</span>
-                </div>
-                <div class="queue-item">
-                  <div class="queue-left">
-                    <span class="queue-dot"></span>
-                    <span class="queue-label">Animated intro sequence</span>
-                  </div>
-                  <span class="queue-tag">Render pass</span>
-                </div>
-                <div class="queue-item">
-                  <div class="queue-left">
-                    <span class="queue-dot"></span>
-                    <span class="queue-label">HUD overlay v2</span>
-                  </div>
-                  <span class="queue-tag">Design lock</span>
-                </div>
-              </div>
-            </div>
-          </section>
+          </div>
         </section>
-      </div>
+      </section>
+
+      <footer class="hud-bottom">
+        <span>BK3 HUD // Single-page tactical site</span>
+        <small>Swap placeholder images + text in Wix to match your actual products and stream overlays.</small>
+      </footer>
     </main>
-
-    <footer id="contact">
-      <div class="footer-inner">
-        <div class="footer-left">
-          Drops By BK3 · Tactical retail & stream ops
-        </div>
-        <div class="footer-right">
-          <span class="footer-pill">San Antonio, TX</span>
-          <span class="footer-pill">Q1 · 2026</span>
-          <span class="footer-pill">Contact: ops@dropsbybk3.com</span>
-        </div>
-      </div>
-    </footer>
   </div>
 
   <script>
-    function scrollToSection(id) {
-      const el = document.getElementById(id);
+    // Clock
+    function updateClock() {
+      const el = document.getElementById("hudClock");
       if (!el) return;
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      el.textContent = hh + ":" + mm + ":" + ss;
     }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Nav switching (soft, just highlights + scrolls)
+    const navItems = document.querySelectorAll(".nav-item");
+    const panels = document.querySelectorAll("[data-section-panel]");
+
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => {
+        const target = item.getAttribute("data-section");
+        navItems.forEach((n) => n.setAttribute("data-active", "false"));
+        item.setAttribute("data-active", "true");
+
+        // Soft behavior: scroll to relevant panel
+        panels.forEach((panel) => {
+          const sections = panel
+            .getAttribute("data-section-panel")
+            .split(" ")
+            .filter(Boolean);
+          if (sections.includes(target)) {
+            panel.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        });
+      });
+    });
+
+    // Live widget simulation
+    const toggleBtn = document.getElementById("toggleLiveBtn");
+    const widgetStatus = document.getElementById("widgetStatus");
+    const widgetStatusLabel = document.getElementById("widgetStatusLabel");
+    const widgetScenePill = document.getElementById("widgetScenePill");
+    const metricViewers = document.getElementById("metricViewers");
+    const metricViewersFill = document.getElementById("metricViewersFill");
+    const metricEnergy = document.getElementById("metricEnergy");
+    const metricEnergyFill = document.getElementById("metricEnergyFill");
+    const metricDrop = document.getElementById("metricDrop");
+
+    let live = false;
+
+    function setMeterWidth(el, pct) {
+      if (!el) return;
+      el.style.width = pct + "%";
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      live = !live;
+      widgetStatus.dataset.live = live ? "true" : "false";
+      widgetStatusLabel.textContent = live ? "LIVE // TACTICAL" : "OFFLINE STANDBY";
+      widgetScenePill.textContent = live ? "Scene: Live Ops" : "Scene: Standby";
+
+      if (live) {
+        const viewers = Math.floor(Math.random() * 120) + 12;
+        const energy = Math.floor(Math.random() * 40) + 60;
+        const drops = ["CORE", "BUNDLE", "SIGNAL", "HEADSHOT"];
+        const drop = drops[Math.floor(Math.random() * drops.length)];
+
+        metricViewers.textContent = viewers;
+        metricEnergy.textContent = energy + "%";
+        metricDrop.textContent = drop;
+
+        setMeterWidth(metricViewersFill, Math.min(viewers, 100));
+        setMeterWidth(metricEnergyFill, energy);
+      } else {
+        metricViewers.textContent = "0";
+        metricEnergy.textContent = "0%";
+        metricDrop.textContent = "CORE";
+        setMeterWidth(metricViewersFill, 10);
+        setMeterWidth(metricEnergyFill, 10);
+      }
+    });
+
+    // Initial meter state
+    setMeterWidth(metricViewersFill, 10);
+    setMeterWidth(metricEnergyFill, 10);
   </script>
 </body>
 </html>
-`

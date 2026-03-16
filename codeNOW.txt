@@ -1,189 +1,1285 @@
+`html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Drops – Drops By BK3</title>
+  <meta charset="UTF-8" />
+  <title>Drops By BK3 – Tactical HUD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-main: #05070b;
+      --bg-panel: #0b1018;
+      --accent: #00ffc6;
+      --accent-soft: rgba(0, 255, 198, 0.18);
+      --accent-strong: #27ffd8;
+      --text-main: #f5f7fb;
+      --text-muted: #7f8ca3;
+      --danger: #ff4b6b;
+      --warning: #ffc857;
+      --border-soft: rgba(255, 255, 255, 0.06);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
 
-<style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-        margin: 0;
-        padding: 0;
-        background: #0a0a0a;
-        color: #e5e5e5;
-        font-family: 'Orbitron', sans-serif;
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #101624 0, #05070b 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    / Layout shell /
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     header {
-        padding: 20px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #1f1f1f;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border-soft);
+      background: linear-gradient(
+        to right,
+        rgba(0, 255, 198, 0.08),
+        transparent
+      );
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
     }
 
-    header nav a {
-        margin-left: 30px;
-        text-decoration: none;
-        color: #e5e5e5;
-        font-size: 14px;
-        letter-spacing: 1px;
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
     }
 
-    .page-title {
-        padding: 60px 40px 20px;
-        font-size: 32px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #7fffd4;
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
-    .filters {
-        padding: 0 40px 40px;
-        display: flex;
-        gap: 20px;
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 0, #1bffcf 0, #05070b 55%);
+      box-shadow: 0 0 18px rgba(0, 255, 198, 0.4);
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
     }
 
-    .filter-btn {
-        padding: 10px 20px;
-        border: 1px solid #1f1f1f;
-        background: #111;
-        color: #e5e5e5;
-        cursor: pointer;
-        font-size: 13px;
-        letter-spacing: 1px;
-        transition: 0.2s;
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
     }
 
-    .filter-btn:hover {
-        background: #7fffd4;
-        color: #000;
+    .brand-title {
+      font-size: 0.95rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-strong);
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 0.15rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.18s ease-out;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 75, 107, 0.4);
+      background: radial-gradient(circle at 0 0, rgba(255, 75, 107, 0.3), transparent);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--danger);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--danger);
+      box-shadow: 0 0 10px rgba(255, 75, 107, 0.9);
+    }
+
+    .btn-primary {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 255, 198, 0.12),
+        rgba(0, 255, 198, 0.02)
+      );
+      color: var(--accent-strong);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.18s ease-out, transform 0.12s ease-out,
+        box-shadow 0.18s ease-out;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 255, 198, 0.22),
+        rgba(0, 255, 198, 0.08)
+      );
+      box-shadow: 0 0 18px rgba(0, 255, 198, 0.35);
+      transform: translateY(-1px);
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 2.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.4fr);
+      gap: 1.5rem;
+    }
+
+    / Left column – hero + drops /
+
+    .panel {
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top left, #151d30 0, #05070b 55%);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.9),
+        0 18px 45px rgba(0, 0, 0, 0.85);
+      padding: 1.25rem 1.25rem 1.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 0 0,
+        rgba(0, 255, 198, 0.12),
+        transparent 55%
+      );
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent-strong);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .eyebrow span {
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        var(--accent-strong),
+        rgba(0, 255, 198, 0)
+      );
+    }
+
+    .hero-title {
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 420px;
+    }
+
+    .panel-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      align-items: flex-end;
+      font-size: 0.75rem;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+    }
+
+    .metric-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.65rem;
+    }
+
+    .metric-value {
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+
+    .metric-pill {
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      background: rgba(0, 255, 198, 0.06);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+      margin-top: 0.75rem;
+    }
+
+    .hero-card {
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top, #151d2a 0, #05070b 60%);
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0, 255, 198, 0.12),
+        transparent 55%
+      );
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .hero-card-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .hero-card-main {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .hero-card-tagline {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.25rem;
+    }
+
+    .tag {
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .tag-accent {
+      border-color: rgba(0, 255, 198, 0.5);
+      color: var(--accent-strong);
+      background: rgba(0, 255, 198, 0.08);
+    }
+
+    .hero-card-cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 0.35rem;
+    }
+
+    .hero-card-note {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .hero-card-mini {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-strong);
+    }
+
+    .divider {
+      margin: 1.1rem 0 0.8rem;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0)
+      );
+    }
+
+    .panel-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .panel-row-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .panel-row-filters {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+    }
+
+    .chip {
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .chip-active {
+      border-color: rgba(0, 255, 198, 0.6);
+      color: var(--accent-strong);
+      background: rgba(0, 255, 198, 0.08);
     }
 
     .drops-grid {
-        padding: 0 40px 80px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 30px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
     }
 
     .drop-card {
-        background: #111;
-        border: 1px solid #1f1f1f;
-        padding: 20px;
-        transition: 0.2s;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
+      padding: 0.6rem 0.6rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.12s ease-out, box-shadow 0.18s ease-out,
+        border-color 0.18s ease-out;
     }
 
     .drop-card:hover {
-        border-color: #7fffd4;
-        transform: translateY(-4px);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9);
+      border-color: rgba(0, 255, 198, 0.5);
     }
 
-    .drop-img {
-        width: 100%;
-        height: 260px;
-        background: #222;
-        margin-bottom: 15px;
+    .drop-tag-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
     }
 
-    .drop-title {
-        font-size: 18px;
-        margin-bottom: 5px;
+    .drop-status {
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      background: rgba(0, 255, 198, 0.06);
+      color: var(--accent-strong);
+    }
+
+    .drop-status-hot {
+      border-color: rgba(255, 75, 107, 0.7);
+      background: rgba(255, 75, 107, 0.12);
+      color: var(--danger);
+    }
+
+    .drop-name {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .drop-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
     }
 
     .drop-price {
-        font-size: 14px;
-        color: #7fffd4;
-        margin-bottom: 10px;
+      color: var(--accent-strong);
+      font-weight: 600;
     }
 
-    .drop-tag {
-        font-size: 12px;
-        opacity: 0.7;
+    .drop-pill {
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .drop-bar {
+      margin-top: 0.25rem;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+
+    .drop-bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(
+        to right,
+        var(--accent),
+        var(--warning),
+        var(--danger)
+      );
+      width: 72%;
+    }
+
+    / Right column – stream + queue /
+
+    .panel-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .stream-panel {
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
+      padding: 1rem 1rem 1.1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stream-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 100% 0,
+        rgba(0, 255, 198, 0.12),
+        transparent 55%
+      );
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .stream-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .stream-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .stream-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stream-eyebrow {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .stream-eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(0, 255, 198, 0.9);
+    }
+
+    .stream-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .stream-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .stream-cta-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+    }
+
+    .stream-platforms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      justify-content: flex-end;
+    }
+
+    .platform-pill {
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .stream-screen {
+      margin-top: 0.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.9);
+      background: radial-gradient(circle at top, #05070b 0, #000 60%);
+      padding: 0.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stream-overlay {
+      border-radius: 9px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      background: radial-gradient(circle at top, #151b28 0, #05070b 60%);
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .stream-overlay::before,
+    .stream-overlay::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      width: 120%;
+      height: 120%;
+      transform: rotate(2deg);
+      opacity: 0.18;
+    }
+
+    .stream-overlay::after {
+      transform: rotate(-4deg);
+      opacity: 0.12;
+    }
+
+    .stream-hud-top,
+    .stream-hud-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      padding: 0.25rem 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .stream-hud-top {
+      top: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.9),
+        transparent
+      );
+    }
+
+    .stream-hud-bottom {
+      bottom: 0;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.9),
+        transparent
+      );
+    }
+
+    .hud-pill {
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 255, 198, 0.4);
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--accent-strong);
+    }
+
+    .hud-meter {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .hud-meter-bar {
+      width: 60px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .hud-meter-fill {
+      width: 70%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        var(--accent),
+        var(--warning),
+        var(--danger)
+      );
+    }
+
+    .queue-panel {
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      background: radial-gradient(circle at bottom, #151b28 0, #05070b 60%);
+      padding: 0.9rem 1rem 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .queue-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 0 100%,
+        rgba(0, 255, 198, 0.12),
+        transparent 55%
+      );
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .queue-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .queue-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .queue-count {
+      font-size: 0.7rem;
+      color: var(--accent-strong);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .queue-left {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .queue-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .queue-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .queue-tag {
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+    }
+
+    .queue-tag-hot {
+      border-color: rgba(255, 75, 107, 0.7);
+      color: var(--danger);
     }
 
     footer {
-        padding: 40px;
-        text-align: center;
-        border-top: 1px solid #1f1f1f;
-        color: #777;
-        font-size: 12px;
+      border-top: 1px solid var(--border-soft);
+      padding: 0.75rem 1.25rem 1rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
     }
-</style>
+
+    .footer-inner {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .footer-left {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-pill {
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    / Responsive /
+
+    @media (max-width: 960px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .panel-metrics {
+        display: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        flex-wrap: wrap;
+        justify-content: space-between;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .shell {
+        padding-inline: 1rem;
+      }
+
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .drops-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .drops-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="page">
+    <header>
+      <div class="nav">
+        <div class="nav-left">
+          <div class="logo-mark">BK3</div>
+          <div class="brand-text">
+            <div class="brand-title">Drops By BK3</div>
+            <div class="brand-sub">Tactical retail ops</div>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a href="#drops">Drops</a>
+          <a href="#stream">Live</a>
+          <a href="#queue">Queue</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <div class="nav-cta">
+          <div class="badge-live">
+            <span class="badge-dot"></span>
+            Live Ops
+          </div>
+          <button class="btn-primary" onclick="scrollToSection('drops')">
+            Shop latest
+            <span>↗</span>
+          </button>
+        </div>
+      </div>
+    </header>
 
-<header>
-    <div class="logo">Drops By BK3</div>
-    <nav>
-        <a href="#">Drops</a>
-        <a href="#">Live</a>
-        <a href="#">Queue</a>
-        <a href="#">Contact</a>
-    </nav>
-</header>
+    <main>
+      <div class="shell">
+        <!-- LEFT COLUMN -->
+        <section class="panel" id="drops">
+          <div class="panel-inner">
+            <div class="panel-header">
+              <div class="panel-title-block">
+                <div class="eyebrow">
+                  <span></span>
+                  Tactical drop control
+                </div>
+                <h1 class="hero-title">Curated tactical drops, one op at a time.</h1>
+                <p class="hero-sub">
+                  Built like a HUD, stocked like a boutique. Every drop is intentional—no noise, just pieces that
+                  hit.
+                </p>
+              </div>
+              <div class="panel-metrics">
+                <div class="metric-row">
+                  <span class="metric-label">Current op</span>
+                  <span class="metric-value">Drop 03 · Q1</span>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Status</span>
+                  <span class="metric-pill">Live inventory</span>
+                </div>
+              </div>
+            </div>
 
-<div class="page-title">Active Drops</div>
+            <div class="hero-grid">
+              <div class="hero-card">
+                <div class="hero-card-label">Featured loadout</div>
+                <div class="hero-card-main">Urban recon set</div>
+                <div class="hero-card-tagline">
+                  Built for creators who move between stream, street, and studio without switching identities.
+                </div>
+                <div class="hero-card-tags">
+                  <span class="tag-accent">Tactical streetwear</span>
+                  <span class="tag">Stream-ready</span>
+                  <span class="tag">Unisex fit</span>
+                </div>
+                <div class="hero-card-cta-row">
+                  <div class="hero-card-note">
+                    Includes hoodie, cap, and patch set. Limited run, no restock.
+                  </div>
+                  <button class="btn-primary" onclick="scrollToSection('drops')">
+                    View bundle
+                  </button>
+                </div>
+              </div>
 
-<div class="filters">
-    <button class="filter-btn">All</button>
-    <button class="filter-btn">Bundles</button>
-    <button class="filter-btn">Apparel</button>
-    <button class="filter-btn">Stream Assets</button>
-</div>
+              <div class="hero-card">
+                <div class="hero-card-label">Ops intel</div>
+                <div class="hero-card-main">BK3 control room</div>
+                <div class="hero-card-tagline">
+                  Retail, stream, and community ops routed through one ecosystem—Drops By BK3.
+                </div>
+                <div class="hero-card-tags">
+                  <span class="tag">TikTok shop</span>
+                  <span class="tag">Multi-stream</span>
+                  <span class="tag-accent">HUD overlays</span>
+                </div>
+                <div class="hero-card-cta-row">
+                  <div class="hero-card-mini">Next: Q2 tactical capsule</div>
+                </div>
+              </div>
+            </div>
 
-<div class="drops-grid">
+            <div class="divider"></div>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 03 · 01</div>
-        <div class="drop-price">$85</div>
-        <div class="drop-tag">Black / Neon Mint</div>
-    </div>
+            <div class="panel-row">
+              <div class="panel-row-title">Active drops</div>
+              <div class="panel-row-filters">
+                <button class="chip chip-active">All</button>
+                <button class="chip">Bundles</button>
+                <button class="chip">Apparel</button>
+                <button class="chip">Stream assets</button>
+              </div>
+            </div>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 03 · 02</div>
-        <div class="drop-price">$42</div>
-        <div class="drop-tag">One Size</div>
-    </div>
+            <div class="drops-grid">
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 03 · 01</span>
+                  <span class="drop-status drop-status-hot">Hot</span>
+                </div>
+                <div class="drop-name">HUD Ops Hoodie</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$85</span>
+                  <span class="drop-pill">Black / Neon mint</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 78%"></div>
+                </div>
+              </article>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 03 · 03</div>
-        <div class="drop-price">$28</div>
-        <div class="drop-tag">3-Pack</div>
-    </div>
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 03 · 02</span>
+                  <span class="drop-status">Live</span>
+                </div>
+                <div class="drop-name">Signal Lock Cap</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$42</span>
+                  <span class="drop-pill">One size</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 54%"></div>
+                </div>
+              </article>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 02 · 04</div>
-        <div class="drop-price">$48</div>
-        <div class="drop-tag">Archive Only</div>
-    </div>
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 03 · 03</span>
+                  <span class="drop-status">Live</span>
+                </div>
+                <div class="drop-name">Creator Ops Patch Set</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$28</span>
+                  <span class="drop-pill">3-pack</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 62%"></div>
+                </div>
+              </article>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 03 · 05</div>
-        <div class="drop-price">$24</div>
-        <div class="drop-tag">HUD Theme</div>
-    </div>
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 02 · 04</span>
+                  <span class="drop-status">Archive</span>
+                </div>
+                <div class="drop-name">Night Ops Tee</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$48</span>
+                  <span class="drop-pill">Archive only</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 100%"></div>
+                </div>
+              </article>
 
-    <div class="drop-card">
-        <div class="drop-img"></div>
-        <div class="drop-title">Drop 03 · 06</div>
-        <div class="drop-price">$60</div>
-        <div class="drop-tag">Twitch · Kick · YT</div>
-    </div>
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 03 · 05</span>
+                  <span class="drop-status drop-status-hot">Low stock</span>
+                </div>
+                <div class="drop-name">Stream Deck Skin</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$24</span>
+                  <span class="drop-pill">HUD theme</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 18%"></div>
+                </div>
+              </article>
 
-</div>
+              <article class="drop-card">
+                <div class="drop-tag-row">
+                  <span>Drop 03 · 06</span>
+                  <span class="drop-status">Live</span>
+                </div>
+                <div class="drop-name">Overlay Pack v1</div>
+                <div class="drop-meta">
+                  <span class="drop-price">$60</span>
+                  <span class="drop-pill">Twitch · Kick · YT</span>
+                </div>
+                <div class="drop-bar">
+                  <div class="drop-bar-fill" style="width: 40%"></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
 
-<footer>
-    Drops By BK3 · Tactical retail & stream ops · San Antonio, TX · Q1 2026
-</footer>
+        <!-- RIGHT COLUMN -->
+        <section class="panel-vertical">
+          <section class="stream-panel" id="stream">
+            <div class="stream-inner">
+              <div class="stream-header">
+                <div class="stream-title-block">
+                  <div class="stream-eyebrow">
+                    <span class="stream-eyebrow-dot"></span>
+                    Multi-stream control
+                  </div>
+                  <div class="stream-title">Live from the BK3 ops room</div>
+                  <div class="stream-meta">
+                    TikTok · Twitch · YouTube · Kick · Facebook · Trovo
+                  </div>
+                </div>
+                <div class="stream-cta-row">
+                  <button class="btn-primary">
+                    Go to live shop
+                  </button>
+                  <div class="stream-platforms">
+                    <span class="platform-pill">TikTok shop</span>
+                    <span class="platform-pill">Twitch</span>
+                    <span class="platform-pill">YouTube</span>
+                  </div>
+                </div>
+              </div>
 
+              <div class="stream-screen">
+                <div class="stream-overlay">
+                  <div class="stream-hud-top">
+                    <span class="hud-pill">Drops By BK3</span>
+                    <span class="hud-meter">
+                      <span>Engagement</span>
+                      <span class="hud-meter-bar">
+                        <span class="hud-meter-fill"></span>
+                      </span>
+                    </span>
+                  </div>
+                  <div>Stream window · HUD overlay preview</div>
+                  <div class="stream-hud-bottom">
+                    <span class="hud-pill">Next drop: Urban Recon Set</span>
+                    <span class="hud-pill">Q1 · 2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="queue-panel" id="queue">
+            <div class="queue-inner">
+              <div class="queue-header">
+                <div class="queue-title">Ops queue</div>
+                <div class="queue-count">03 items in pipeline</div>
+              </div>
+              <div class="queue-list">
+                <div class="queue-item">
+                  <div class="queue-left">
+                    <span class="queue-dot"></span>
+                    <span class="queue-label">Q2 tactical capsule</span>
+                  </div>
+                  <span class="queue-tag queue-tag-hot">In dev</span>
+                </div>
+                <div class="queue-item">
+                  <div class="queue-left">
+                    <span class="queue-dot"></span>
+                    <span class="queue-label">Animated intro sequence</span>
+                  </div>
+                  <span class="queue-tag">Render pass</span>
+                </div>
+                <div class="queue-item">
+                  <div class="queue-left">
+                    <span class="queue-dot"></span>
+                    <span class="queue-label">HUD overlay v2</span>
+                  </div>
+                  <span class="queue-tag">Design lock</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <footer id="contact">
+      <div class="footer-inner">
+        <div class="footer-left">
+          Drops By BK3 · Tactical retail & stream ops
+        </div>
+        <div class="footer-right">
+          <span class="footer-pill">San Antonio, TX</span>
+          <span class="footer-pill">Q1 · 2026</span>
+          <span class="footer-pill">Contact: ops@dropsbybk3.com</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  </script>
 </body>
 </html>
+`
